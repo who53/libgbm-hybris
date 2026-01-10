@@ -153,7 +153,7 @@ struct gbm_bo* hybris_gbm_bo_create(struct gbm_device* device, uint32_t width, u
     cmd.id = &bo->evdi_lindroid_buff_id;
     int ret = ioctl(device->v0.fd, DRM_IOCTL_EVDI_GBM_CREATE_BUFF, &cmd);
 
-    bo->base.v0.stride = stride;
+    bo->base.v0.stride = stride * 4;
 
     return &bo->base;
 }
