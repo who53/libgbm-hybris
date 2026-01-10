@@ -1,4 +1,5 @@
 #include <fcntl.h> 
+#include <stddef.h>
 #include <xf86drm.h>
 
 #include <stdio.h>
@@ -278,13 +279,19 @@ int hybris_gbm_bo_get_fd(struct gbm_bo* _bo) {
         return -1;
     }
 
-      if(write(fd, &bo->evdi_lindroid_buff_id, sizeof(int)) != sizeof(int)) {
+    if(write(fd, &bo->evdi_lindroid_buff_id, sizeof(int)) != sizeof(int)) {
         printf("[libgbm-hybris] failed to write evdi_lindroid_buff_id into mefd\n");
         close(fd);
         return -1;
     }
 
-   return fd;
+    const size_t size = (size_t)bo->base.v0.stride * bo->base.v0.height;
+    if (ftruncate(fd, size) < 0) {
+        close(fd);
+        return -1;
+    }
+
+    return fd;
 }
 
 int hybris_gbm_bo_get_plane_count(struct gbm_bo *bo)
