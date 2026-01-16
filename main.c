@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <fcntl.h> 
 #include <stddef.h>
 #include <xf86drm.h>
@@ -14,7 +15,7 @@
 #include <linux/memfd.h>
 
 #include <gbm.h>
-#include "gbm_backend_abi.h"
+#include <gbm_backend_abi.h>
 
 #include <hybris/gralloc/gralloc.h>
 
@@ -22,31 +23,10 @@
 
 #include <assert.h>
 
-#define DRM_EVDI_GBM_ADD_BUFF 0x05
-#define DRM_EVDI_GBM_DEL_BUFF 0x0B
-#define DRM_EVDI_GBM_CREATE_BUFF 0x0C
-
-#define DRM_IOCTL_EVDI_GBM_DEL_BUFF DRM_IOWR(DRM_COMMAND_BASE +  \
-	DRM_EVDI_GBM_DEL_BUFF, struct drm_evdi_gbm_del_buff)
-
-#define DRM_IOCTL_EVDI_GBM_ADD_BUFF DRM_IOWR(0x40 +  \
-	DRM_EVDI_GBM_ADD_BUFF, struct drm_evdi_gbm_add_buf)
-
-#define DRM_IOCTL_EVDI_GBM_CREATE_BUFF DRM_IOWR(DRM_COMMAND_BASE +  \
-	DRM_EVDI_GBM_CREATE_BUFF, struct drm_evdi_gbm_create_buff)
-
-struct drm_evdi_gbm_add_buf {
-	int fd;
-	int id;
-};
-
-struct drm_evdi_gbm_del_buff {
-	int id;
-};
+#include "evdi_drm.h"
 
 struct gbm_hybris_bo {
    struct gbm_bo base;
-//   buffer_handle_t handle;
    int evdi_lindroid_buff_id;
 };
 
@@ -64,8 +44,6 @@ struct drm_evdi_gbm_create_buff {
 };
 
 static const struct gbm_core *core;
-
-int memfd_create(const char *name, unsigned int flags);
 
 struct gbm_hybris_bo *gbm_hybris_bo(struct gbm_bo *bo)
 {
